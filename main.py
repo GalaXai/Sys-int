@@ -3,6 +3,7 @@ from src.mrp import MRP
 
 
 def main():
+    # TODO: Test values, need to be changed
     plyta_plisniowa = MRP("Płyty plisniowe",1, 10, 1, 50)
     blaty = MRP("Blaty",3, 22, 1, 40,
                 [plyta_plisniowa])
