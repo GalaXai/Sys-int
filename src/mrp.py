@@ -1,9 +1,10 @@
 import pandas as pd
 import math
+
 class MRP:
     def __init__(
-            self,name, realization_time, nb_of_resources, resource_per_unit,
-            resource_per_batch, mrp_array_lower_level=None, nb_of_weeks=10, receptions=None):
+            self,name: str, realization_time: int, nb_of_resources: int, resource_per_unit: int,
+            resource_per_batch: int, mrp_array_lower_level: list = None, nb_of_weeks: int = 10, receptions: list[dict[str, int]] = None) -> None:
         """
         :param name: Name of the MRP product
         :param realization_time: Time of realization of the product in weeks
@@ -30,7 +31,7 @@ class MRP:
             "Planowane zamówienia", "Planowane przyjęcie zamówień"
         ], columns=range(1, self.nb_of_weeks+1)).fillna(0)
 
-    def calculate_mrp(self, decision_array, unit_realization_time):
+    def calculate_mrp(self, decision_array : list[dict[str, int]], unit_realization_time: int) -> None:
         """
         Calculate MRP
         :param decision_array: List of decisions for the MRP, decision need to be in format:
@@ -47,7 +48,7 @@ class MRP:
         for mrp in self.mrp_array_lower_level:
             mrp.calculate_mrp(self.mrp_decision_array_lower_level, mrp.realization_time)
 
-    def _calculate_remaining_resources(self):
+    def _calculate_remaining_resources(self) -> None:
         """
         Calculate remaining resources for MRP based on decisions
         :return:
@@ -60,7 +61,7 @@ class MRP:
                 self._calculate_order(week)
                 break
 
-    def _calculate_decision(self, decision_array, unit_realization_time):
+    def _calculate_decision(self, decision_array :list[dict[str, int]], unit_realization_time: int) -> None:
         """
         Calculate decision for MRP product based on higher level MRP product and insert to mrp_decision_array
         :param decision_array: Decision array for higher level MRP product, decision need to be in format:
@@ -78,7 +79,7 @@ class MRP:
                 }
             )
 
-    def _insert_decision(self):
+    def _insert_decision(self) -> None:
         """
         Insert decision to MRP DataFrame
         :return:
@@ -88,7 +89,7 @@ class MRP:
         for reception in self.receptions:
             self.mrp_df.iloc[1, reception["week"]] = reception["reception"]
 
-    def _calculate_order(self, week):
+    def _calculate_order(self, week: int) -> None:
         """
         Calculate order for necessary MRP product when there is not enough resources
         :param week: Week when the order needs to be delivered

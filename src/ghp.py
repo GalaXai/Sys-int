@@ -1,7 +1,8 @@
 import pandas as pd
 
 class GHP:
-    def __init__(self,name, realization_time, nb_of_resources, ghp_decision_array, mrp_array, nb_of_weeks=10):
+    def __init__(self, name: str, realization_time: int, nb_of_resources: int,
+                 ghp_decision_array: list[dict[str, int]], mrp_array: list[object], nb_of_weeks: int = 10) -> None:
         """
         :param name: Name of the GHP product
         :param realization_time: Time of realization of the product in weeks
@@ -14,17 +15,17 @@ class GHP:
         self.name = name
         self.realization_time = realization_time
         self.nb_of_resources = nb_of_resources
+        self.nb_of_weeks = nb_of_weeks
         self.ghp_df = pd.DataFrame(index=["Przewidywany popyt","Produkcja","Dostępne"],
                                       columns=range(0, self.nb_of_weeks)).fillna(0)
         self.ghp_decision_array = ghp_decision_array
         self.mrp_array = mrp_array
-        self.nb_of_weeks = nb_of_weeks
         self._calculate_gph()
         # TODO :Test prints, need to be changed
         print(self.name)
         print(self.ghp_df)
 
-    def calculate_mrp(self):
+    def calculate_mrp(self) -> None:
         """
         Calculate lower level MRP`s products for the GHP
         :return:
@@ -32,7 +33,7 @@ class GHP:
         for mrp_object in self.mrp_array:
             mrp_object.calculate_mrp(self.ghp_decision_array, self.realization_time)
 
-    def _calculate_gph(self):
+    def _calculate_gph(self) -> None:
         """
         Calculate GHP
         :return:
@@ -41,7 +42,7 @@ class GHP:
             self._insert_decision(decision)
         self._calculate_remaining_resources()
 
-    def _calculate_remaining_resources(self):
+    def _calculate_remaining_resources(self) -> None:
         """
         Calculate remaining resources for GHP based on decisions
         :return:
@@ -50,7 +51,7 @@ class GHP:
         for week in range(1, self.nb_of_weeks):
             self.ghp_df.iloc[2, week] = (self.ghp_df.iloc[2, week-1]+self.ghp_df.iloc[1, week]) - self.ghp_df.iloc[0, week]
 
-    def _insert_decision(self, decision):
+    def _insert_decision(self, decision: dict[str, int]) -> None:
         """
         Insert decision to GHP DataFrame
         :param decision: should be in format:
@@ -62,4 +63,3 @@ class GHP:
         production = decision["production"]
         self.ghp_df.iloc[0, week] = expected_demand
         self.ghp_df.iloc[1, week] = production
-
