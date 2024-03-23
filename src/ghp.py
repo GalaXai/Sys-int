@@ -23,7 +23,7 @@ class GHP:
         self._calculate_gph()
         # TODO :Test prints, need to be changed
         print(self.name)
-        print(self.ghp_df)
+        print(self.ghp_df, end="\n\n")
 
     def calculate_mrp(self) -> None:
         """

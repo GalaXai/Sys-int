@@ -44,7 +44,7 @@ class MRP:
         self._calculate_remaining_resources()
         # TODO: Test prints, need to be changed
         print(self.name)
-        print(self.mrp_df)
+        print(self.mrp_df, end="\n\n")
         for mrp in self.mrp_array_lower_level:
             mrp.calculate_mrp(self.mrp_decision_array_lower_level, mrp.realization_time)
 
