@@ -3,7 +3,7 @@ import math
 
 class MRP:
     def __init__(
-            self,name: str, realization_time: int, nb_of_resources: int, resource_per_unit: int,
+            self, name: str, realization_time: int, nb_of_resources: int, resource_per_unit: int,
             resource_per_batch: int, mrp_array_lower_level: list = None, nb_of_weeks: int = 10, receptions: list[dict[str, int]] = None) -> None:
         """
         :param name: Name of the MRP product
