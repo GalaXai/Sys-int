@@ -17,7 +17,7 @@ class GHP:
         self.nb_of_resources = nb_of_resources
         self.nb_of_weeks = nb_of_weeks
         self.ghp_df = pd.DataFrame(index=["Przewidywany popyt","Produkcja","Dostępne"],
-                                      columns=range(0, self.nb_of_weeks)).fillna(0)
+                                      columns=range(1, self.nb_of_weeks+1)).fillna(0)
         self.ghp_decision_array = ghp_decision_array
         self.mrp_array = mrp_array
         self._calculate_gph()
