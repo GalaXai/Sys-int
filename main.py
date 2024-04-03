@@ -7,7 +7,7 @@ def main():
            "Skuwka": [1, 5, 1, 30],
            "Główna część obudowy": [2, 35, 1, 40],
            "Obudowa":[1, 5, 1, 30, 10,["Skuwka", "Główna część obudowy"]]}
-    parsed_data = MRPParser.parser(data)
+    parsed_data = MRPParser.parse(data)
     
     ghp = GHP("Długopis", 1, 15, 10,[
                         {"week": 5, "expected_demand": 20, "production": 28},
