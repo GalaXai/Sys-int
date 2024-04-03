@@ -1,4 +1,4 @@
-from src import MRPparser, GHP, MRP
+from src import MRPParser, GHP, MRP
 
 
 def main():
@@ -19,7 +19,7 @@ def parser_main():
            "Skuwka": [1, 5, 1, 30],
            "Główna część obudowy": [2, 35, 1, 40],
            "Obudowa":[1, 5, 1, 30, 10,["Skuwka", "Główna część obudowy"]]}
-    parsed_data = MRPparser.parse(data)
+    parsed_data = MRPParser.parse(data)
     print(parsed_data)
 
     wklad = MRP("Wkład", 3, 10, 3, 60)
@@ -30,7 +30,7 @@ def parser_main():
     p_ghp = GHP("Długopis", 1, 15, 10,[
                         {"week": 5, "expected_demand": 20, "production": 28},
                         {"week": 7, "expected_demand": 40, "production": 30}],
-                        [parsed_data["Wklad"], parsed_data["Obudowa"]])
+                        parsed_data)
     ghp = GHP("Długopis", 1, 15, 10,[
                         {"week": 5, "expected_demand": 20, "production": 28},
                         {"week": 7, "expected_demand": 40, "production": 30}],
