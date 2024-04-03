@@ -10,7 +10,7 @@ def window():
     win.setWindowTitle('first window')
 
     label = QtWidgets.QLabel(win)
-    label.setText("hello")
+    label.setText('hello')
     label.move(50, 50)
 
     win.show()
