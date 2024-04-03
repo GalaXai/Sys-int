@@ -4,15 +4,15 @@ import math
 class MRP:
     def __init__(
             self, name: str, realization_time: int, nb_of_resources: int, resource_per_unit: int,
-            resource_per_batch: int, mrp_array_lower_level: list = None, nb_of_weeks: int = 10, receptions: list[dict[str, int]] = None) -> None:
+            resource_per_batch: int, nb_of_weeks: int = 10, mrp_array_lower_level: list = None, receptions: list[dict[str, int]] = None) -> None:
         """
         :param name: Name of the MRP product
         :param realization_time: Time of realization of the product in weeks
         :param nb_of_resources: Number of resources available before the start of the production
         :param resource_per_unit: Number of resources needed to produce one final product
         :param resource_per_batch: Number of resources in one batch
-        :param mrp_array_lower_level: List of lower level MRP products
         :param nb_of_weeks: Number of weeks for which the MRP will be calculated
+        :param mrp_array_lower_level: List of lower level MRP products
         :param receptions: List of receptions before the start of the production, reception need to be in format:
         {"week": week, "reception": number_of_reception}
         """
@@ -29,7 +29,7 @@ class MRP:
         self.mrp_df = pd.DataFrame(index=[
             "Całkowite zapotrzebowanie", "Planowane przyjęcia", "Przewidywane na stanie", "Zapotrzebowanie netto",
             "Planowane zamówienia", "Planowane przyjęcie zamówień"
-        ], columns=range(1, self.nb_of_weeks+1)).fillna(0)
+        ], columns=range(1, self.nb_of_weeks+1)).infer_objects(copy=False).fillna(0).astype('int')
 
     def calculate_mrp(self, decision_array : list[dict[str, int]], unit_realization_time: int) -> None:
         """
