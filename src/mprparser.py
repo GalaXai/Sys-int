@@ -2,7 +2,7 @@ from .mrp import MRP
 
 class MRPparser:
     @staticmethod
-    def parse(data: dict) -> list[MRP]:
+    def parse(data: dict) -> dict[str,MRP]:
         objects = {}
         for key, value in data.items():
             
