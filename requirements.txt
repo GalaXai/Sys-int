@@ -6,6 +6,7 @@ PyQt5==5.15.9
 pyqt5-plugins==5.15.9.2.3
 PyQt5-Qt5==5.15.2
 PyQt5-sip==12.13.0
+PyQt5-stubs==5.15.6.0
 pyqt5-tools==5.15.9.3.3
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
