@@ -2,22 +2,22 @@ import pandas as pd
 
 class GHP:
     def __init__(self, name: str, realization_time: int, nb_of_resources: int,
-                 ghp_decision_array: list[dict[str, int]], mrp_array: list[object], nb_of_weeks: int = 10) -> None:
+                 nb_of_weeks: int = 10, ghp_decision_array: list[dict[str, int]] = None, mrp_array: list[object] = None) -> None:
         """
         :param name: Name of the GHP product
         :param realization_time: Time of realization of the product in weeks
         :param nb_of_resources: Number of resources available before the start of the production
+        :param nb_of_weeks: Number of weeks for which the GHP will be calculated
         :param ghp_decision_array:  List of decisions for the GHP, decision need to be in format:
         {"week": week, "expected_demand": number_of_expected_demand, "production": number_of_production}
         :param mrp_array: List of lower level MRP products
-        :param nb_of_weeks: Number of weeks for which the GHP will be calculated
         """
         self.name = name
         self.realization_time = realization_time
         self.nb_of_resources = nb_of_resources
         self.nb_of_weeks = nb_of_weeks
         self.ghp_df = pd.DataFrame(index=["Przewidywany popyt","Produkcja","Dostępne"],
-                                      columns=range(1, self.nb_of_weeks+1)).fillna(0)
+                                      columns=range(1, self.nb_of_weeks+1)).infer_objects(copy=False).fillna(0).astype('int')
         self.ghp_decision_array = ghp_decision_array
         self.mrp_array = mrp_array
         self._calculate_gph()
