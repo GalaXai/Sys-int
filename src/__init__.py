@@ -1,3 +1,4 @@
 from .ghp import GHP
 from .mrp import MRP
-from .mprparser import MRPParser
+from .mrpparser import MRPParser
+from .ghp_ui import GHPWindow
