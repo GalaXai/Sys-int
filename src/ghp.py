@@ -61,5 +61,5 @@ class GHP:
         week = decision["week"]
         expected_demand = decision["expected_demand"]
         production = decision["production"]
-        self.ghp_df.iloc[0, week] = expected_demand
-        self.ghp_df.iloc[1, week] = production
+        self.ghp_df.iloc[0, week-1] = expected_demand
+        self.ghp_df.iloc[1, week-1] = production

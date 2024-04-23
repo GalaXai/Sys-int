@@ -1,19 +1,12 @@
-from src import MRPParser, GHP, MRP
+from src import GHPWindow
+import sys
+from PyQt5.QtWidgets import QApplication
 
 def main():
-    # TODO: Test values, need to be changed
-    # długopis(wkład, obudowa(skuwka, obudowa główna))
-    data = {"Wklad": [3, 10, 3, 60,],
-           "Skuwka": [1, 5, 1, 30],
-           "Główna część obudowy": [2, 35, 1, 40],
-           "Obudowa":[1, 5, 1, 30, 10,["Skuwka", "Główna część obudowy"]]}
-    parsed_data = MRPParser.parse(data)
-    
-    ghp = GHP("Długopis", 1, 15, 10,[
-                        {"week": 5, "expected_demand": 20, "production": 28},
-                        {"week": 7, "expected_demand": 40, "production": 30}],
-                        parsed_data)
-    ghp.calculate_mrp()
+    pass
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    window = GHPWindow()
+    window.show()
+    sys.exit(app.exec_())

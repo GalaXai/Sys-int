@@ -28,13 +28,15 @@ class MRPParser:
 
             # Check if the object has lower-level objects
             if len(object_data) > 5 and object_data[5]:
+                if isinstance(object_data[5], str):
+                    object_data[5] = object_data[5].split(", ")
                 # Check if the lower-level objects have already been created
                 for lower_level_name in object_data[5]:
                     if lower_level_name not in all_objects:
                         # Create the lower-level object
                         all_objects[lower_level_name] = MRP(lower_level_name, *data[lower_level_name])
                 object_data[5] = [all_objects[obj_name] for obj_name in object_data[5]]
-
+            
             new_object = MRP(object_name, *object_data)
             all_objects[new_object.name] = new_object
 
