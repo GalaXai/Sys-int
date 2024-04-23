@@ -9,7 +9,7 @@ class GHPWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("GHP Calculator")
-        self.setGeometry(100, 100, 600, 700)
+        self.setGeometry(100, 100, 400, 500)
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
@@ -29,7 +29,7 @@ class GHPWindow(QMainWindow):
 
         self.calculate_button = QPushButton("Calculate GHP")
         self.calculate_button.clicked.connect(self.calculate_ghp)
-        self.result_table = QTableWidget()  
+        #self.result_table = QTableWidget()  
 
 
         # Assembling the layout
@@ -42,10 +42,8 @@ class GHPWindow(QMainWindow):
 
         self.layout.addWidget(self.mrp_button)
         self.layout.addWidget(self.calculate_button)
-        self.layout.addWidget(self.result_table)
 
         
-        # Initialize the list to hold input sets
         self.decision_inputs = []
 
         # Add initial set of inputs
@@ -149,31 +147,10 @@ class GHPWindow(QMainWindow):
         print(ghp_data)
         ghp = GHP(**ghp_data, mrp_array=mrp_data)
         if mrp_data: ghp.calculate_mrp()
-        ghp_data = ghp.ghp_df
-        rows, columns = ghp_data.shape
-        self.result_table.setRowCount(rows)
-        self.result_table.setColumnCount(columns)
-        self.result_table.setVerticalHeaderLabels(["Expected Demand", "Production", "In Stock"])
-
         
-        # Styling & Fonts & Auto-resize
-        self.result_table.setAlternatingRowColors(True)
-        self.result_table.setFont(QFont("Arial", 10))
-        header_font = QFont("Arial", 12)
-        self.result_table.horizontalHeader().setFont(header_font)
-        self.result_table.verticalHeader().setFont(header_font)
-        self.result_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # Display the Calculated Tables
         
-        # Populate the table with items
-        for i in range(rows):
-            for j in range(columns):
-                item = QTableWidgetItem(str(ghp_data.iloc[i, j]))
-                item.setTextAlignment(Qt.AlignCenter)
-                self.result_table.setItem(i, j, item)
-
-        # Display the MRP Tables
-        if mrp_data:
-            viewer = DataFrameViewer([*ghp.mrp_array])
-            viewer.exec_()
+        viewer = DataFrameViewer([ghp,*ghp.mrp_array])
+        viewer.exec_()
 
     # TODO clear_form method
