@@ -26,9 +26,9 @@ class MRP:
         self.mrp_decision_array_lower_level = []
         self.nb_of_weeks = nb_of_weeks
         self.receptions = receptions or []
-        self.mrp_df = pd.DataFrame(index=[
-            "Całkowite zapotrzebowanie", "Planowane przyjęcia", "Przewidywane na stanie", "Zapotrzebowanie netto",
-            "Planowane zamówienia", "Planowane przyjęcie zamówień"
+        self.data_df = pd.DataFrame(index=[
+            "Gross Req", "Scheduled Receipts", "Projected On Hand", "Net Requirements",
+            "Planned Receipts", "Planned Order Release"
         ], columns=range(1, self.nb_of_weeks+1)).infer_objects(copy=False).fillna(0).astype('int')
 
     def calculate_mrp(self, decision_array : list[dict[str, int]], unit_realization_time: int) -> None:
@@ -44,7 +44,7 @@ class MRP:
         self._calculate_remaining_resources()
         # TODO: Test prints, need to be changed
         print(self.name)
-        print(self.mrp_df, end="\n\n")
+        print(self.data_df, end="\n\n")
         for mrp in self.mrp_array_lower_level:
             mrp.calculate_mrp(self.mrp_decision_array_lower_level, mrp.realization_time)
 
@@ -53,11 +53,11 @@ class MRP:
         Calculate remaining resources for MRP based on decisions
         :return:
         """
-        self.mrp_df.iloc[2, 0] = (self.nb_of_resources + self.mrp_df.iloc[1, 0] + self.mrp_df.iloc[5, 0]) - self.mrp_df.iloc[0, 0]
-        if self.mrp_df.iloc[2, 0] < 0: self.mrp_df.iloc[3, 0] = abs(self.mrp_df.iloc[2, 0])
+        self.data_df.iloc[2, 0] = (self.nb_of_resources + self.data_df.iloc[1, 0] + self.data_df.iloc[5, 0]) - self.data_df.iloc[0, 0]
+        if self.data_df.iloc[2, 0] < 0: self.data_df.iloc[3, 0] = abs(self.data_df.iloc[2, 0])
         for week in range(1, self.nb_of_weeks):
-            self.mrp_df.iloc[2, week] = (self.mrp_df.iloc[2, week-1]+self.mrp_df.iloc[1, week] + self.mrp_df.iloc[5, week]) - self.mrp_df.iloc[0, week]
-            if self.mrp_df.iloc[2, week] < 0:
+            self.data_df.iloc[2, week] = (self.data_df.iloc[2, week-1]+self.data_df.iloc[1, week] + self.data_df.iloc[5, week]) - self.data_df.iloc[0, week]
+            if self.data_df.iloc[2, week] < 0:
                 self._calculate_order(week)
                 break
 
@@ -85,9 +85,9 @@ class MRP:
         :return:
         """
         for decision in self.mrp_decision_array:
-            self.mrp_df.iloc[0, decision["week"]] = decision["production"]
+            self.data_df.iloc[0, decision["week"]] = decision["production"]
         for reception in self.receptions:
-            self.mrp_df.iloc[1, reception["week"]] = reception["reception"]
+            self.data_df.iloc[1, reception["week"]] = reception["reception"]
 
     def _calculate_order(self, week: int) -> None:
         """
@@ -95,16 +95,16 @@ class MRP:
         :param week: Week when the order needs to be delivered
         :return:
         """
-        self.mrp_df.iloc[3, week] = abs(self.mrp_df.iloc[2, week])
+        self.data_df.iloc[3, week] = abs(self.data_df.iloc[2, week])
         planning_week = week - self.realization_time
         if planning_week < 0: return
-        self.mrp_df.iloc[4, planning_week] = math.ceil(
-            (self.mrp_df.iloc[3, week] / self.resource_per_batch)) * self.resource_per_batch
+        self.data_df.iloc[4, planning_week] = math.ceil(
+            (self.data_df.iloc[3, week] / self.resource_per_batch)) * self.resource_per_batch
         self.mrp_decision_array_lower_level.append(
             {
                 "week": planning_week,
-                "production": self.mrp_df.iloc[4, planning_week]
+                "production": self.data_df.iloc[4, planning_week]
             }
         )
-        self.mrp_df.iloc[5, week] = self.mrp_df.iloc[4, week - self.realization_time]
+        self.data_df.iloc[5, week] = self.data_df.iloc[4, week - self.realization_time]
         self._calculate_remaining_resources()
