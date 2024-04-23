@@ -22,22 +22,29 @@ class MRPParser:
         all_objects = {}
 
         for object_name, object_data in data.items():
-            # Check if the object has already been created
             if object_name in all_objects:
                 continue
 
-            # Check if the object has lower-level objects
+            # Create a shallow copy of object_data to avoid modifying the input data
+            object_data = object_data.copy()
+
+            # Parse dependencies if any
             if len(object_data) > 5 and object_data[5]:
-                if isinstance(object_data[5], str):
-                    object_data[5] = object_data[5].split(", ")
-                # Check if the lower-level objects have already been created
-                for lower_level_name in object_data[5]:
+                dependencies = object_data[5]
+                if isinstance(dependencies, str):
+                    dependencies = dependencies.split(", ")
+                
+                resolved_dependencies = []
+                for lower_level_name in dependencies:
                     if lower_level_name not in all_objects:
-                        # Create the lower-level object
+                        # Recursively create the dependent object
                         all_objects[lower_level_name] = MRP(lower_level_name, *data[lower_level_name])
-                object_data[5] = [all_objects[obj_name] for obj_name in object_data[5]]
+                    resolved_dependencies.append(all_objects[lower_level_name])
+                
+                object_data[5] = resolved_dependencies
             
+            # Create the current object
             new_object = MRP(object_name, *object_data)
-            all_objects[new_object.name] = new_object
+            all_objects[object_name] = new_object
 
         return MRPParser.filter_top_level_objects(all_objects)

@@ -16,14 +16,14 @@ class GHP:
         self.realization_time = realization_time
         self.nb_of_resources = nb_of_resources
         self.nb_of_weeks = nb_of_weeks
-        self.ghp_df = pd.DataFrame(index=["Przewidywany popyt","Produkcja","Dostępne"],
+        self.data_df = pd.DataFrame(index=["Expected Demand", "Production", "In Stock"],
                                       columns=range(1, self.nb_of_weeks+1)).infer_objects(copy=False).fillna(0).astype('int')
         self.ghp_decision_array = ghp_decision_array
         self.mrp_array = mrp_array
         self._calculate_gph()
         # TODO :Test prints, need to be changed
         print(self.name)
-        print(self.ghp_df, end="\n\n")
+        print(self.data_df, end="\n\n")
 
     def calculate_mrp(self) -> None:
         """
@@ -47,9 +47,9 @@ class GHP:
         Calculate remaining resources for GHP based on decisions
         :return:
         """
-        self.ghp_df.iloc[2, 0] = (self.nb_of_resources + self.ghp_df.iloc[1, 0]) - self.ghp_df.iloc[0, 0]
+        self.data_df.iloc[2, 0] = (self.nb_of_resources + self.data_df.iloc[1, 0]) - self.data_df.iloc[0, 0]
         for week in range(1, self.nb_of_weeks):
-            self.ghp_df.iloc[2, week] = (self.ghp_df.iloc[2, week-1]+self.ghp_df.iloc[1, week]) - self.ghp_df.iloc[0, week]
+            self.data_df.iloc[2, week] = (self.data_df.iloc[2, week-1]+self.data_df.iloc[1, week]) - self.data_df.iloc[0, week]
 
     def _insert_decision(self, decision: dict[str, int]) -> None:
         """
@@ -61,5 +61,5 @@ class GHP:
         week = decision["week"]
         expected_demand = decision["expected_demand"]
         production = decision["production"]
-        self.ghp_df.iloc[0, week-1] = expected_demand
-        self.ghp_df.iloc[1, week-1] = production
+        self.data_df.iloc[0, week-1] = expected_demand
+        self.data_df.iloc[1, week-1] = production

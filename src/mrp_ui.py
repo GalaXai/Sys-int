@@ -104,17 +104,17 @@ class MRPProductManager(QDialog):
     def clear_form(self):
         # Clear the form inputs
         self.name_edit.clear()
-        self.realization_time_edit.setValue(1)
-        self.nb_of_resources_edit.setValue(1)
-        self.resource_per_unit_edit.setValue(1)
-        self.resource_per_batch_edit.setValue(1)
+        self.realization_time_edit.setValue(0)
+        self.nb_of_resources_edit.setValue(0)
+        self.resource_per_unit_edit.setValue(0)
+        self.resource_per_batch_edit.setValue(0)
         self.mrp_array_lower_level_edit.clear()
         self.receptions_edit.clear()
 
 class DataFrameViewer(QDialog):
     def __init__(self, dataframes, parent=None):
         super(DataFrameViewer, self).__init__(parent)
-        self.setWindowTitle("MRP Tables")
+        self.setWindowTitle("Calculated Tables")
         self.dataframes = dataframes
         self.init_ui()
 
@@ -124,10 +124,15 @@ class DataFrameViewer(QDialog):
         layout.addWidget(tab_widget)
 
         # Create a tab for each DataFrame
-        for idx, df in enumerate(self.dataframes):
+        for df in self.dataframes:
+            if hasattr(df, "mrp_array_lower_level"):
+                for df_lower in df.mrp_array_lower_level:
+                    tab = QTableWidget()
+                    tab_widget.addTab(tab, f'{df_lower.name}')
+                    self.populate_table_widget(tab, df_lower.data_df)
             tab = QTableWidget()
             tab_widget.addTab(tab, f'{df.name}')
-            self.populate_table_widget(tab, df.mrp_df)
+            self.populate_table_widget(tab, df.data_df)
 
         self.setLayout(layout)
         self.resize(800, 600)
@@ -136,9 +141,8 @@ class DataFrameViewer(QDialog):
         # Set table dimensions
         table_widget.setRowCount(dataframe.shape[0])
         table_widget.setColumnCount(dataframe.shape[1])
-        table_widget.setVerticalHeaderLabels(["Gross Req", "Scheduled Receipts", "Projected On Hand", "Net Requirements",
-            "Planned Receipts", "Planned Order Release"])
-        
+        table_widget.setVerticalHeaderLabels(dataframe.index)
+
         # Styling
         table_widget.setAlternatingRowColors(True)
         # Styling & Fonts & Auto-resize
