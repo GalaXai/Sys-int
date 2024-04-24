@@ -59,7 +59,7 @@ class MRP:
             self.data_df.iloc[2, week] = (self.data_df.iloc[2, week-1]+self.data_df.iloc[1, week] + self.data_df.iloc[5, week]) - self.data_df.iloc[0, week]
             if self.data_df.iloc[2, week] < 0:
                 self._calculate_order(week)
-                break
+                continue
 
     def _calculate_decision(self, decision_array :list[dict[str, int]], unit_realization_time: int) -> None:
         """
