@@ -149,8 +149,10 @@ class GHPWindow(QMainWindow):
         if mrp_data: ghp.calculate_mrp()
         
         # Display the Calculated Tables
-        
-        viewer = DataFrameViewer([ghp,*ghp.mrp_array])
+        if ghp.mrp_array:
+            viewer = DataFrameViewer([ghp,*ghp.mrp_array])
+        else:
+            viewer = DataFrameViewer([ghp])
         viewer.exec_()
 
     # TODO clear_form method

@@ -45,7 +45,7 @@ class MRPProductManager(QDialog):
         self.buttons_layout.addWidget(self.clear_button)
 
         self.add_button.clicked.connect(self.add_product)
-        self.clear_button.clicked.connect(self.clear_form)
+        self.clear_button.clicked.connect(self.clear_list)
         
         # List to display products
         self.products_list = QListWidget()
@@ -110,6 +110,10 @@ class MRPProductManager(QDialog):
         self.resource_per_batch_edit.setValue(0)
         self.mrp_array_lower_level_edit.clear()
         self.receptions_edit.clear()
+    def clear_list(self):
+        # Clear the form inputs
+        self.products_list.clear()
+        self.raw_data = {}
 
 class DataFrameViewer(QDialog):
     def __init__(self, dataframes, parent=None):
