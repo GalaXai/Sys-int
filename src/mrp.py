@@ -53,20 +53,16 @@ class MRP:
         Calculate remaining resources for MRP based on decisions
         :return:
         """
-        if week_from is not None:
-            self.data_df.iloc[2, week_from] = (self.data_df.iloc[2, week_from-1] + self.data_df.iloc[1, week_from] + self.data_df.iloc[5, week_from]) - self.data_df.iloc[0, week_from]
-            if self.data_df.iloc[2, week_from] < 0: self.data_df.iloc[3, week_from] = abs(self.data_df.iloc[2, week_from])
-            for week in range(week_from + 1, self.nb_of_weeks):
-                self.data_df.iloc[2, week] = (self.data_df.iloc[2, week-1]+self.data_df.iloc[1, week] + self.data_df.iloc[5, week]) - self.data_df.iloc[0, week]
-                if self.data_df.iloc[2, week] < 0:
-                    self._calculate_order(week)
-        else:
+        if week_from is None:
+            week_from = 0
             self.data_df.iloc[2, 0] = (self.nb_of_resources + self.data_df.iloc[1, 0] + self.data_df.iloc[5, 0]) - self.data_df.iloc[0, 0]
-            if self.data_df.iloc[2, 0] < 0: self.data_df.iloc[3, 0] = abs(self.data_df.iloc[2, 0])
-            for week in range(1, self.nb_of_weeks):
-                self.data_df.iloc[2, week] = (self.data_df.iloc[2, week-1]+self.data_df.iloc[1, week] + self.data_df.iloc[5, week]) - self.data_df.iloc[0, week]
-                if self.data_df.iloc[2, week] < 0:
-                    self._calculate_order(week)
+        else:
+            self.data_df.iloc[2, week_from] = (self.data_df.iloc[2, week_from-1] + self.data_df.iloc[1, week_from] + self.data_df.iloc[5, week_from]) - self.data_df.iloc[0, week_from]
+        if self.data_df.iloc[2, week_from] < 0: self.data_df.iloc[3, week_from] = abs(self.data_df.iloc[2, week_from])
+        for week in range(week_from + 1, self.nb_of_weeks):
+            self.data_df.iloc[2, week] = (self.data_df.iloc[2, week-1]+self.data_df.iloc[1, week] + self.data_df.iloc[5, week]) - self.data_df.iloc[0, week]
+            if self.data_df.iloc[2, week] < 0:
+                self._calculate_order(week)
 
     def _calculate_decision(self, decision_array :list[dict[str, int]], unit_realization_time: int) -> None:
         """
