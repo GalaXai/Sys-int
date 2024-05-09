@@ -54,52 +54,37 @@ class MRPProductManager(QDialog):
         self.layout.addLayout(self.form_layout)
         self.layout.addLayout(self.buttons_layout)
         self.layout.addWidget(self.products_list)
+        self.products_list.itemClicked.connect(self.on_item_clicked)
 
-        # VARIABLES
-        if not hasattr(self, "raw_data"):
-            self.raw_data = {}
-        
-        if not hasattr(self, "value_container"):
-            self.values_containers = [
-                self.realization_time_edit,
-                self.nb_of_resources_edit,
-                self.resource_per_unit_edit,
-                self.resource_per_batch_edit,
-                self.mrp_array_lower_level_edit,
-                self.receptions_edit,
-            ]
 
-        
+    def compile_product_details(self):
+        return {
+            self.name_edit.text(): {
+                "Realization": self.realization_time_edit.value(),
+                "Resources": self.nb_of_resources_edit.value(),
+                "Resources/Unit": self.resource_per_unit_edit.value(),
+                "Resources/Batch": self.resource_per_batch_edit.value(),
+                "Lower Level": self.mrp_array_lower_level_edit.text(),
+                "Receptions": self.receptions_edit.text()
+            }
+        }        
 
     def add_product(self):
-
-        self.raw_data[self.name_edit.text()] = [
-            widget.value() if hasattr(widget, 'value') else None if widget.text() == "" else widget.text()
-            for widget in self.values_containers
-        ]
-
-        product_details = {
-            self.name_edit.text():{
-            "Realization": self.realization_time_edit.value(), 
-            "Resources": self.nb_of_resources_edit.value(),
-            "Resources/Unit": self.resource_per_unit_edit.value(),
-            "Resources/Batch": self.resource_per_batch_edit.value(), 
-            "Lower Level": self.mrp_array_lower_level_edit.text(), 
-            "Receptions": self.receptions_edit.text()}}
-        
-        # Convert dictionary to JSON string
+        product_details = self.compile_product_details()
         item_text = json.dumps(product_details)
         self.products_list.addItem(item_text)
         self.clear_form()
+
     
-    def get_data(self):
-        return self.raw_data
-    
-    def open_mrp_manager(self):
-        self.mrp_window = MRPProductManager(self)
-        result = self.mrp_window.exec_()  # This will now work as MRPProductManager is a QDialog
-        if result == QDialog.Accepted:
-            self.mrp_data = self.mrp_window.get_data()
+    def get_data(self) -> dict:
+        data = {}
+        for index in range(self.products_list.count()):
+            item = self.products_list.item(index)
+            item_data = json.loads(item.text())
+            details = next(iter(item_data.values()))
+            values = [value if value != '' else None for value in details.values()]
+            data[next(iter(item_data.keys()))] = values
+        return data
     
     def clear_form(self):
         # Clear the form inputs
@@ -110,10 +95,53 @@ class MRPProductManager(QDialog):
         self.resource_per_batch_edit.setValue(0)
         self.mrp_array_lower_level_edit.clear()
         self.receptions_edit.clear()
+        print("data: ", self.get_data())
+    
+    def on_item_clicked(self, item):
+        data = json.loads(item.text())
+        # Assuming data is stored as {name: {details}}
+        name, details = next(iter(data.items()))
+        self.name_edit.setText(name)
+        self.realization_time_edit.setValue(details['Realization'])
+        self.nb_of_resources_edit.setValue(details['Resources'])
+        self.resource_per_unit_edit.setValue(details['Resources/Unit'])
+        self.resource_per_batch_edit.setValue(details['Resources/Batch'])
+        self.mrp_array_lower_level_edit.setText(details['Lower Level'])
+        self.receptions_edit.setText(details['Receptions'])
+        self.currently_editing = item
+
+
+        self.swap_button()
+
+
+    def swap_button(self):
+        if self.add_button.text() == "Add Product":
+            self.add_button.disconnect()
+            self.add_button.setText("Update Product")
+            self.add_button.clicked.connect(self.on_save_clicked)
+        elif self.add_button.text() == "Update Product":
+            self.add_button.disconnect()
+            self.add_button.setText("Add Product")
+            self.add_button.clicked.connect(self.add_product)
+        else:
+            pass
+
+    def on_save_clicked(self):
+        updated_item_text = json.dumps(self.compile_product_details())
+        self.currently_editing.setText(updated_item_text)
+        self.clear_form()            
+        self.swap_button()
+
+
     def clear_list(self):
         # Clear the form inputs
         self.products_list.clear()
-        self.raw_data = {}
+    
+    def open_mrp_manager(self):
+        self.mrp_window = MRPProductManager(self)
+        result = self.mrp_window.exec_()  # This will now work as MRPProductManager is a QDialog
+        if result == QDialog.Accepted:
+            self.mrp_data = self.mrp_window.get_data()
 
 class DataFrameViewer(QDialog):
     def __init__(self, dataframes, parent=None):
