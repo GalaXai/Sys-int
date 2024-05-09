@@ -1,4 +1,5 @@
 from .mrp import MRP
+from re import split
 
 class MRPParser:
     @staticmethod
@@ -7,10 +8,10 @@ class MRPParser:
         Filters objects to return only the top-level objects.
         If an object is a lower-level object, it is removed.
         """
-        objects_to_remove = []
+        objects_to_remove = set()
         for obj in all_objects.values():
             for lower_level_obj in obj.mrp_array_lower_level:
-                objects_to_remove.append(lower_level_obj.name)
+                objects_to_remove.add(lower_level_obj.name)
 
         for obj_name in objects_to_remove:
             del all_objects[obj_name]
@@ -31,16 +32,22 @@ class MRPParser:
             # Parse dependencies if any
             if len(object_data) > 5 and object_data[5]:
                 dependencies = object_data[5]
+
                 if isinstance(dependencies, str):
-                    dependencies = dependencies.split(", ")
+                    dependencies = split(r',\s*', dependencies)
+                    print(dependencies)
+
                 
                 resolved_dependencies = []
                 for lower_level_name in dependencies:
-                    if lower_level_name not in all_objects:
-                        # Recursively create the dependent object
-                        all_objects[lower_level_name] = MRP(lower_level_name, *data[lower_level_name])
-                    resolved_dependencies.append(all_objects[lower_level_name])
-                
+                    if lower_level_name in data:
+                        if lower_level_name not in all_objects:
+                            # Recursively create the dependent object
+                            all_objects[lower_level_name] = MRP(lower_level_name, *data[lower_level_name])
+                        resolved_dependencies.append(all_objects[lower_level_name])
+                    else:
+                        raise ValueError(f"Object {object_name} depends on non-existent object {lower_level_name}")
+                    
                 object_data[5] = resolved_dependencies
             
             # Create the current object
