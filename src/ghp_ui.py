@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, \
-    QTableWidget, QTableWidgetItem, QSpinBox, QFrame, QHeaderView
+    QTableWidget, QTableWidgetItem, QSpinBox, QFrame, QHeaderView, QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from src import GHP,MRPParser
-from src.mrp_ui import MRPProductManager, DataFrameViewer
+from src.mrp_ui import MRPProductManager, DataFrameViewer, SpinBoxConf
 
 class GHPWindow(QMainWindow):
     def __init__(self):
@@ -20,9 +20,9 @@ class GHPWindow(QMainWindow):
         self.name_label = QLabel("Name:")
         self.name = QLineEdit()
         self.realization_label = QLabel("Realization Time (weeks):")
-        self.realization_time = QLineEdit()
+        self.realization_time = SpinBoxConf()
         self.resources_label = QLabel("Number of Resources:")
-        self.nb_of_resources = QLineEdit()
+        self.nb_of_resources = SpinBoxConf()
 
         self.mrp_button = QPushButton("Open MRP Manager")
         self.mrp_button.clicked.connect(self.open_mrp_manager)
@@ -62,8 +62,8 @@ class GHPWindow(QMainWindow):
         
         # Default values
         self.name.setText("Dlugopis")
-        self.realization_time.setText("1")
-        self.nb_of_resources.setText("15")
+        self.realization_time.setValue(1)
+        self.nb_of_resources.setValue(15)
         self.mrp_window = MRPProductManager()
         
 
@@ -74,9 +74,9 @@ class GHPWindow(QMainWindow):
         self.layout.addWidget(divider)
 
         entry = {
-            'week': {'label': QLabel("Choose week:"), 'input': QSpinBox()},
-            'expected_demand': {'label': QLabel("Expected Demand:"), 'input': QSpinBox()},
-            'production': {'label': QLabel("Production:"), 'input': QSpinBox()}
+            'week': {'label': QLabel("Choose week:"), 'input': SpinBoxConf()},
+            'expected_demand': {'label': QLabel("Expected Demand:"), 'input': SpinBoxConf()},
+            'production': {'label': QLabel("Production:"), 'input': SpinBoxConf()}
         }
 
         self.layout.addWidget(QLabel("Production Input"))
@@ -112,8 +112,8 @@ class GHPWindow(QMainWindow):
     def collect_data(self):
         data = {
             'name': self.name.text(),
-            'realization_time': int(self.realization_time.text()),
-            'nb_of_resources': int(self.nb_of_resources.text()),
+            'realization_time': self.realization_time.value(),
+            'nb_of_resources': self.nb_of_resources.value(),
         }
 
         # Find the maximum number of weeks from the decision array
@@ -140,14 +140,23 @@ class GHPWindow(QMainWindow):
                     # Ensures we are not out of bounds
                     mrp_object_data[4] = max_weeks
 
-            mrp_data = MRPParser.parse(self.mrp_data)
-            print(mrp_data)
+            try:
+                mrp_data = MRPParser.parse(self.mrp_data)                
+                print(mrp_data)
+            except ValueError as e:
+                self.show_warning(str(e))
+                return
         else: mrp_data = None
         
         print(ghp_data)
         ghp = GHP(**ghp_data, mrp_array=mrp_data)
-        if mrp_data: ghp.calculate_mrp()
-        
+        if mrp_data: 
+            try:
+                ghp.calculate_mrp()
+            except IndexError:
+                self.show_warning("The MRP data is incomplete. Please check the input data.")
+                return
+            
         # Display the Calculated Tables
         if ghp.mrp_array:
             viewer = DataFrameViewer([ghp,*ghp.mrp_array])
@@ -155,4 +164,9 @@ class GHPWindow(QMainWindow):
             viewer = DataFrameViewer([ghp])
         viewer.exec_()
 
-    # TODO clear_form method
+    def show_warning(self,message):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText(message)
+        msg.setWindowTitle("Warning")
+        msg.exec_()
