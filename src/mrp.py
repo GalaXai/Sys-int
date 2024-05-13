@@ -90,7 +90,7 @@ class MRP:
         for decision in self.mrp_decision_array:
             self.data_df.iloc[0, decision["week"]] = decision["production"]
         for reception in self.receptions:
-            self.data_df.iloc[1, reception["week"]] = reception["reception"]
+            self.data_df.iloc[1, reception["week"] -1] = reception["reception"]
 
     def _calculate_order(self, week: int) -> None:
         """

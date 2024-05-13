@@ -47,7 +47,7 @@ class MRPProductManager(QDialog):
 
         self.form_layout.addRow("Name:", self.name_edit)
         self.form_layout.addRow("Realization Time (weeks):", self.realization_time_edit)
-        self.form_layout.addRow("Number of Resources:", self.nb_of_resources_edit)
+        self.form_layout.addRow("Currently in stock:", self.nb_of_resources_edit)
         self.form_layout.addRow("Resources per Unit:", self.resource_per_unit_edit)
         self.form_layout.addRow("Resources per Batch:", self.resource_per_batch_edit)
         self.form_layout.addRow("Lower Level MRP Products:", self.mrp_array_lower_level_edit)
