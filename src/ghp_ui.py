@@ -20,7 +20,7 @@ class GHPWindow(QWidget):
         self.name = QLineEdit()
         self.realization_label = QLabel("Realization Time (weeks):")
         self.realization_time = QSpinBox()
-        self.resources_label = QLabel("Number of Resources:")
+        self.resources_label = QLabel("Currently in stock:")
         self.nb_of_resources = QSpinBox()
 
         self.mrp_button = QPushButton("Open MRP Manager")
