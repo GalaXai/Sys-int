@@ -1,4 +1,4 @@
-from src import GHPWindow
+from src import GHPWindow, MainWindow
 import sys
 from PyQt5.QtWidgets import QApplication
 
@@ -7,6 +7,7 @@ def main():
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = GHPWindow()
+    # window = GHPWindow()
+    window = MainWindow()
     window.show()
     sys.exit(app.exec_())

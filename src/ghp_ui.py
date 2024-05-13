@@ -5,32 +5,29 @@ from PyQt5.QtGui import QFont
 from src import GHP,MRPParser
 from src.mrp_ui import MRPProductManager, DataFrameViewer, SpinBoxConf
 
-class GHPWindow(QMainWindow):
+class GHPWindow(QWidget):
     def __init__(self):
         super().__init__()
+
         self.setWindowTitle("GHP Calculator")
         self.setGeometry(100, 100, 400, 500)
 
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout()
-        self.central_widget.setLayout(self.layout)
+        self.setLayout(self.layout)
 
-        # QpyQt5 Widgets
+        # PyQt5 Widgets
         self.name_label = QLabel("Name:")
         self.name = QLineEdit()
         self.realization_label = QLabel("Realization Time (weeks):")
-        self.realization_time = SpinBoxConf()
+        self.realization_time = QSpinBox()
         self.resources_label = QLabel("Number of Resources:")
-        self.nb_of_resources = SpinBoxConf()
+        self.nb_of_resources = QSpinBox()
 
         self.mrp_button = QPushButton("Open MRP Manager")
         self.mrp_button.clicked.connect(self.open_mrp_manager)
 
         self.calculate_button = QPushButton("Calculate GHP")
         self.calculate_button.clicked.connect(self.calculate_ghp)
-        #self.result_table = QTableWidget()  
-
 
         # Assembling the layout
         self.layout.addWidget(self.name_label)
@@ -39,33 +36,30 @@ class GHPWindow(QMainWindow):
         self.layout.addWidget(self.realization_time)
         self.layout.addWidget(self.resources_label)
         self.layout.addWidget(self.nb_of_resources)
+        # self.layout.addWidget(self.mrp_button)
+        # self.layout.addWidget(self.calculate_button)
 
-        self.layout.addWidget(self.mrp_button)
-        self.layout.addWidget(self.calculate_button)
-
-        
         self.decision_inputs = []
 
         # Add initial set of inputs
         self.add_new_inputs()
+
         # Button to save the inputs
         self.saveButton = QPushButton('Save Productions', self)
         self.saveButton.clicked.connect(self.save_inputs)
         self.layout.addWidget(self.saveButton)
-        
 
-        ## VARIABLES
+        # VARIABLES
         if not hasattr(self, 'mrp_data'):
             self.mrp_data = None
         if not hasattr(self, 'ghp_array'):
-            self.ghp_array = [{'week': 0, 'expected_demand': 0, 'production': 0}] # default value
-        
+            self.ghp_array = [{'week': 0, 'expected_demand': 0, 'production': 0}]  # default value
+
         # Default values
         self.name.setText("Dlugopis")
         self.realization_time.setValue(1)
         self.nb_of_resources.setValue(15)
         self.mrp_window = MRPProductManager()
-        
 
     def add_new_inputs(self):
         divider = QFrame()
@@ -160,9 +154,12 @@ class GHPWindow(QMainWindow):
         # Display the Calculated Tables
         if ghp.mrp_array:
             viewer = DataFrameViewer([ghp,*ghp.mrp_array])
+            print("true")
         else:
             viewer = DataFrameViewer([ghp])
-        viewer.exec_()
+            print("false")
+        # viewer.exec_()
+        return viewer
 
     def show_warning(self,message):
         msg = QMessageBox()
