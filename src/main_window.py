@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.tab_label1, 0, 0)
 
         # Dodawanie drugiego okna do siatki
-        self.tab_label2 = mrp_ui.MRPProductManager()         # QLabel("Zawartość drugiego okna")
+        self.tab_label2 = mrp_ui.MRPProductManager()
         self.grid_layout.addWidget(self.tab_label2, 0, 1)
         
         # Tworzenie przycisku
@@ -32,14 +32,9 @@ class MainWindow(QMainWindow):
         
     
     def add_new_widget(self):
+        self.tab_label1.mrp_data = self.tab_label2.get_data()
         new_widget = self.tab_label1.calculate_ghp()
 
         # Dodawanie nowego widgetu do GridLayout
-        # row_count = self.grid_layout.rowCount()
         self.grid_layout.addWidget(new_widget, 2, 0, 1, 3) 
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     window = MainWindow()
-#     window.show()
-#     sys.exit(app.exec_())
