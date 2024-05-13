@@ -1,4 +1,3 @@
-```
 # MRP algorythm
 > Project carried out as part of the Integrated Systems course
 
@@ -37,4 +36,3 @@ This will start the application and you can interact with it throught the GUI.
 * Justyna Gargula 221391
 * Kamila Kapinos 221572
 * Eryk Tabiś 222765
-```
