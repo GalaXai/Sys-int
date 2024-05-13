@@ -49,6 +49,11 @@ class GHPWindow(QWidget):
         self.saveButton.clicked.connect(self.save_inputs)
         self.layout.addWidget(self.saveButton)
 
+        # Button to clear the inputs
+        self.clearButton = QPushButton('Clear Productions', self)
+        self.clearButton.clicked.connect(self.clear_ghp_data)
+        self.layout.addWidget(self.clearButton)
+
         # VARIABLES
         if not hasattr(self, 'mrp_data'):
             self.mrp_data = None
@@ -90,6 +95,10 @@ class GHPWindow(QWidget):
 
         # Optionally clear inputs after saving
         self.clear_inputs()
+
+    def clear_ghp_data(self):
+        # Clear the GHP data
+        self.ghp_array = [{'week': 0, 'expected_demand': 0, 'production': 0}]
 
     def clear_inputs(self):
         for entry in self.decision_inputs:
