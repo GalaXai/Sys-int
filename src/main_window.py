@@ -29,12 +29,18 @@ class MainWindow(QMainWindow):
 
         # Dodawanie trzeciego okna do siatki
         self.grid_layout.addWidget(self.add_widget_button, 1, 1)
+
+        self.grid3_f = False
         
     
     def add_new_widget(self):
         self.tab_label1.mrp_data = self.tab_label2.get_data()
         new_widget = self.tab_label1.calculate_ghp()
-
+        item = self.grid_layout.itemAtPosition(2, 0)
+        if item is not None:
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
         # Dodawanie nowego widgetu do GridLayout
         self.grid_layout.addWidget(new_widget, 2, 0, 1, 3) 
 
